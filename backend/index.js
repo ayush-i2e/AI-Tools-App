@@ -12,7 +12,19 @@ mongoose.connect('mongodb://localhost:27017/ai-tools', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('Connected to MongoDB'))
+.then(async () => {
+  console.log('Connected to MongoDB');
+  try {
+    await mongoose.connection.db.dropCollection('ai-tools');
+    console.log('Collection ai-tools dropped');
+  } catch (e) {
+    if (e.code === 26) {
+      console.log('Collection ai-tools not found, skipping drop');
+    } else {
+      throw e;
+    }
+  }
+})
 .catch(err => console.error('MongoDB connection error:', err));
 
 const aiToolSchema = new mongoose.Schema({
@@ -22,6 +34,7 @@ const aiToolSchema = new mongoose.Schema({
   category: String,
   department: String,
   use: String,
+  details: String,
 });
 
 const AiTool = mongoose.model('AiTool', aiToolSchema);
@@ -52,6 +65,7 @@ app.post('/ai-tools', async (req, res) => {
       category: req.body.category,
       department: req.body.department,
       use: req.body.use,
+      details: req.body.details,
     });
     await newAiTool.save();
     console.log('AI Tool created');
@@ -72,6 +86,7 @@ app.put('/ai-tools/:id', async (req, res) => {
       category: req.body.category,
       department: req.body.department,
       use: req.body.use,
+      details: req.body.details,
     }, { new: true });
     if (!aiTool) {
       return res.status(404).send('AI Tool not found');
@@ -113,7 +128,8 @@ app.get('/ai-tools/:id', async (req, res) => {
       link: aiTool.link,
       category: aiTool.category,
       department: aiTool.department,
-      use: aiTool.use
+      use: aiTool.use,
+      details: aiTool.details,
     });
     res.json(aiTool);
   } catch (error) {

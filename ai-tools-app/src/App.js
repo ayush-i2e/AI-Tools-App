@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import AIToolList from './components/AIToolList';
-import AIToolDetails from './components/AIToolDetails';
+import AIToolDetails from './components/AIToolCard';
 import AIToolDetailsPage from './components/AIToolDetailsPage';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
